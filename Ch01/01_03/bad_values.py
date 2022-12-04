@@ -23,3 +23,11 @@ z_score = (mem - mem.mean())/mem.std()
 bad_mem = mem[z_score.abs() > 2]
 # bad_mem
 df.loc[bad_mem.index]
+
+# %%
+cpu = df[df['name'] == 'cpu']['value']
+z_score = (cpu - cpu.mean())/cpu.std()
+bad_cpu = cpu[z_score.abs() > 2]
+# bad_mem
+df.loc[bad_cpu.index]
+# %%
