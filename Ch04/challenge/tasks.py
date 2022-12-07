@@ -11,19 +11,16 @@ Drop and report invalid rows.
 Report the percentage of bad rows. Fail the ETL if there are more than 5% bad rows
 """
 
-# %%
 import ipaddress
 import sqlite3
 import pandas as pd
 from invoke import task
-import numpy as np
 
-# %% http.HTTPStatus
+# http.HTTPStatus
 from http import HTTPStatus
 status_code = [a.value for a in HTTPStatus]
-status_code
 
-# %% ipaddress can use to validate an ip address
+# ipaddress can use to validate an ip address
 
 
 def validate_ip_address(ip_string):
@@ -33,16 +30,6 @@ def validate_ip_address(ip_string):
     except ValueError:
         return False
 
-
-validate_ip_address("127.0.0.1")
-# %%
-# %%
-# explore data
-traffic_df = pd.read_csv('traffic.csv')
-traffic_df.head()
-# %%
-traffic_df.dtypes
-# %%
 # load csv
 
 
@@ -58,7 +45,7 @@ def validate(df):
     # ip_mask = df['ip'].str.match("'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'")
 
     # use ".apply" to validate by a function
-    ip_mask = traffic_df['ip'].apply(validate_ip_address)
+    ip_mask = df['ip'].apply(validate_ip_address)
 
     # to get the current time, use pd.Timestamp.now(), use strftime to transfer timestamp to string
     time_mask = df['time'] <= pd.Timestamp.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -74,26 +61,12 @@ def validate(df):
     if len(df_bad) > 0:
         raise ValueError(df_bad)
 
-# %%
-
 
 @task
 def etl(ctx, csv_file):
     df = load_csv(csv_file)
     validate(df)
 
-# %%
-
-
-db_file = f'traffic.db'
-conn = sqlite3.connect(db_file)
-df.to_sql('traffic', conn, index=False, if_exists='append')
-
-# %%
-traffic_df[traffic_df['status'].isin(status_code)]
-# %%
-traffic_df
-# %% 获取现在的时间
-pd.Timestamp.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-# %%
+    db_file = f'traffic.db'
+    conn = sqlite3.connect(db_file)
+    df.to_sql('traffic', conn, index=False, if_exists='append')

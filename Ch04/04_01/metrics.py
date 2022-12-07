@@ -1,4 +1,5 @@
 # %%
+import pyarrow as pa
 import pandas as pd
 import numpy as np
 
@@ -9,9 +10,8 @@ df = pd.DataFrame({
     'value': np.random.rand(size) * 40,
 })
 df
-
+df.dtypes
 # %%
-import pyarrow as pa
 
 schema = pa.schema([
     ('time', pa.timestamp('ms')),
@@ -28,4 +28,14 @@ pd.read_parquet(out_file)
 
 # %%
 df['time'] = df['time'].astype(str)
+df.dtypes
+# %%
+df
+# %%
 df.to_parquet(out_file, schema=schema)
+
+# %%
+df['time'] = df['time'].astype(datetime64)
+df.to_parquet(out_file, schema=schema)
+
+# %%
